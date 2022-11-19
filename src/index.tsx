@@ -46,7 +46,7 @@ interface TableProperties<T extends Record<string, unknown>>
   //   defaultGrouping: string[];
   //   defaultVisibilityState: Record<string, boolean>;
   children?: React.ReactNode;
-  getRowStyling?: (row: Row<T>) => RowStylingEnum | undefined;
+  getRowStyling?: (row: Row<T>) => string | undefined;
   setSelected?: (rows: Row<T>[]) => void;
   selectedIds?: number[];
   preserveSelected?: boolean;
@@ -72,7 +72,7 @@ export function GroupTable<T extends Record<string, unknown>>(
     setTableState,
     tableState,
   } = props;
-  const classes2 = useTableStyles();
+  //   const classes2 = useTableStyles();
 
   //   /**Get saved table settings */
   //   const [tableState, setTableState] = useTableState<TableState>(tableKey, {
@@ -272,9 +272,18 @@ export function GroupTable<T extends Record<string, unknown>>(
 
   return (
     <>
-      <TableContainer component={Paper} className={classes2.root}>
-        <div className={classes2.tools}>
-          <div className={classes2.pasteTool}>{children}</div>
+      <TableContainer
+        component={Paper}
+        //   className={classes2.root}
+      >
+        <div
+        // className={classes2.tools}
+        >
+          <div
+          //   className={classes2.pasteTool}
+          >
+            {children}
+          </div>
           <ColumnSelectRT instance={table} />
         </div>
         <Table

@@ -21,17 +21,17 @@ export function HeaderCell<T extends {}>({
   header,
   table,
 }: HeaderCellProps<T>) {
-  const { classes } = useTableStyles();
+  //   const { classes } = useTableStyles();
   return (
     <TableCell
-      className={classes.header}
+      //   className={classes.header}
       key={header.id}
       colSpan={header.colSpan}
     >
       {header.isPlaceholder ? null : (
         <>
           <div
-            className={classes.header}
+            // className={classes.header}
             style={{
               display: "flex",
               flexDirection: "row",
@@ -56,7 +56,7 @@ export function HeaderCell<T extends {}>({
               <div
                 {...{
                   className: header.column.getCanSort()
-                    ? classes.canSortClass
+                    ? "classes.canSortClass"
                     : "",
                   onClick: header.column.getToggleSortingHandler(),
                   onKeyDown: header.column.getToggleSortingHandler(),
