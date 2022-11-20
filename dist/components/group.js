@@ -1,17 +1,20 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { flexRender } from "@tanstack/react-table";
 import Button from "@mui/material/Button";
+import { CheckboxCell } from "./selection";
 import React from "react";
 import TableCellMui from "@mui/material/TableCell";
 import TableRowMui from "@mui/material/TableRow";
 import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
-export function TableRow({ row, state, rowClassName, isSelected, }) {
+export function TableRow({ row, state, rowClassName, isSelected, enableSelection, handleRowSelection, }) {
     return (React.createElement(TableRowMui, { "data-row-index": row.index, "data-row-is-group-row": row.getIsGrouped() ? 1 : undefined, style: {
             cursor: !row.getIsGrouped() ? "pointer" : "auto",
-        }, className: `${rowClassName} ${!row.getIsGrouped() && "slk-table-selectable"} ${isSelected && "Mui-selected"}` }, row.getVisibleCells().map((cell) => {
-        return React.createElement(TableCell, { key: cell.id, cell: cell, state: state });
-    })));
+        }, className: `${rowClassName} ${!row.getIsGrouped() && "tu-table-selectable"} ${isSelected && "Mui-selected"}` },
+        enableSelection && !row.getIsGrouped() && (React.createElement(CheckboxCell, { handleRowSelection: handleRowSelection, row: row, isSelected: isSelected })),
+        row.getVisibleCells().map((cell) => {
+            return React.createElement(TableCell, { key: cell.id, cell: cell, state: state });
+        })));
 }
 export function TableCell({ cell }) {
     var _a;

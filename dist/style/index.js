@@ -1,4 +1,4 @@
-export function TableRootStyle({ overrideColors, theme, }) {
+export function TableRootStyle({ overrideColors, theme }) {
     return {
         "& .tu-table--disabled": {
             backgroundColor: (overrideColors === null || overrideColors === void 0 ? void 0 : overrideColors.disabled)

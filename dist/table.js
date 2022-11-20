@@ -1,6 +1,7 @@
 import { getCoreRowModel, getExpandedRowModel, getFacetedMinMaxValues, getFacetedRowModel, getFacetedUniqueValues, getFilteredRowModel, getGroupedRowModel, getPaginationRowModel, getSortedRowModel, useReactTable, } from "@tanstack/react-table";
 import { useCallback, useEffect, useState, } from "react";
 import Box from "@mui/material/Box";
+import { CheckboxHeaderCell } from "./components/selection";
 import { ColumnSelectRT } from "./utils";
 import { HeaderCell } from "./components/header";
 import LinearProgress from "@mui/material/LinearProgress";
@@ -15,17 +16,16 @@ import { TableRow } from "./components/group";
 import TableRowMui from "@mui/material/TableRow";
 export function TuTable(props) {
     const { columns, children, getRowStyling, setSelected, preserveSelected, selectedIds, enableSelection, setTableState, tableState, tableContainerStyle, } = props;
-    //   /**Get saved table settings */
-    //   const [tableState, setTableState] = useTableState<TableState>(tableKey, {
-    //     grouping: defaultGrouping,
-    //     columnVisibility: defaultVisibilityState,
-    //     expanded: {},
-    //   } as TableState);
-    const [columnFilters, setColumnFilters] = useState([]);
     function updateGrouping(update) {
         const grouping = update instanceof Function ? update(tableState.grouping) : update;
         setTableState((prev) => {
             return Object.assign(Object.assign({}, prev), { grouping });
+        });
+    }
+    function updateColumnFilters(update) {
+        const columnFilters = update instanceof Function ? update(tableState.columnFilters) : update;
+        setTableState((prev) => {
+            return Object.assign(Object.assign({}, prev), { columnFilters });
         });
     }
     function updateVisibility(update) {
@@ -47,41 +47,15 @@ export function TuTable(props) {
         });
     }
     /**Table instance */
-    const table = useReactTable(Object.assign(Object.assign({}, props), { columns, getCoreRowModel: getCoreRowModel(), autoResetExpanded: false, state: Object.assign(Object.assign({}, tableState), { columnFilters }), enableRowSelection: true, enableMultiRowSelection: true, enableSubRowSelection: true, onColumnFiltersChange: setColumnFilters, onGroupingChange: updateGrouping, onColumnVisibilityChange: updateVisibility, onExpandedChange: updateExpanded, onSortingChange: updateSorting, getExpandedRowModel: getExpandedRowModel(), getGroupedRowModel: getGroupedRowModel(), getPaginationRowModel: getPaginationRowModel(), getFilteredRowModel: getFilteredRowModel(), getSortedRowModel: getSortedRowModel(), getFacetedRowModel: getFacetedRowModel(), getFacetedUniqueValues: getFacetedUniqueValues(), getFacetedMinMaxValues: getFacetedMinMaxValues(), debugTable: false }));
+    const table = useReactTable(Object.assign(Object.assign({}, props), { columns, getCoreRowModel: getCoreRowModel(), autoResetExpanded: false, state: tableState, enableRowSelection: true, enableMultiRowSelection: true, enableSubRowSelection: true, onColumnFiltersChange: updateColumnFilters, onGroupingChange: updateGrouping, onColumnVisibilityChange: updateVisibility, onExpandedChange: updateExpanded, onSortingChange: updateSorting, getExpandedRowModel: getExpandedRowModel(), getGroupedRowModel: getGroupedRowModel(), getPaginationRowModel: getPaginationRowModel(), getFilteredRowModel: getFilteredRowModel(), getSortedRowModel: getSortedRowModel(), getFacetedRowModel: getFacetedRowModel(), getFacetedUniqueValues: getFacetedUniqueValues(), getFacetedMinMaxValues: getFacetedMinMaxValues(), debugTable: false }));
     function getRowClassName(row) {
         if (getRowStyling !== undefined) {
             const className = getRowStyling(row);
             if (className !== undefined) {
-                return `slk-table--${className}`;
+                return `tu-table--${className}`;
             }
         }
         return "";
-    }
-    /**
-     * Gets the current row being clicked from the 'data-row-index' attribute on the parent <tr>
-     * element for any click event. Using this approach to avoid row re-renders whenever click handler
-     * callbacks are updated
-     *
-     * @param target  The Target HTMLElement (event.target) that raised the event
-     * @param rows    The list of sorted rows
-     */
-    function getRowFromEvent(target, rows) {
-        var _a, _b, _c, _d, _e, _f;
-        // skip if this is group header
-        const isGroup = (_b = (_a = target.closest("tr")) === null || _a === void 0 ? void 0 : _a.getAttribute("data-row-is-group-row")) !== null && _b !== void 0 ? _b : "";
-        if (isGroup)
-            return null;
-        // Skip if this is action cell
-        const isAction = (_d = (_c = target.closest("td")) === null || _c === void 0 ? void 0 : _c.getAttribute("data-is-action")) !== null && _d !== void 0 ? _d : "";
-        if (isAction)
-            return null;
-        const rowIndex = parseInt((_f = (_e = target.closest("tr")) === null || _e === void 0 ? void 0 : _e.getAttribute("data-row-index")) !== null && _f !== void 0 ? _f : "");
-        const filteredRows = rows.filter((row) => row.index === rowIndex && !row.getIsGrouped());
-        if (filteredRows.length) {
-            // Should only be one result
-            return filteredRows[0];
-        }
-        return null;
     }
     const [selectedRows, setSelectedRows] = useState([]);
     useEffect(() => {
@@ -166,20 +140,17 @@ export function TuTable(props) {
                 React.createElement(Box, { sx: { flexGrow: 1 } }, children),
                 React.createElement(ColumnSelectRT, { instance: table })),
             React.createElement(Table, { style: { overflowX: "auto" }, role: "grid", size: "small", "aria-label": "Table" },
-                React.createElement(TableHead, null, table.getHeaderGroups().map((headerGroup) => (React.createElement(TableRowMui, { key: headerGroup.id }, headerGroup.headers.map((header) => {
-                    return (React.createElement(HeaderCell, { key: header.id, header: header, table: table }));
-                }))))),
-                React.createElement(TableBody, { onClick: (event) => {
-                        const row = getRowFromEvent(event.target, table.getRowModel().rows);
-                        if (row) {
-                            handleRowSelection(event, row);
-                        }
-                    } },
+                React.createElement(TableHead, null, table.getHeaderGroups().map((headerGroup) => (React.createElement(TableRowMui, { key: headerGroup.id },
+                    enableSelection && (React.createElement(CheckboxHeaderCell, { setSelected: setSelected, setSelectedRows: setSelectedRows, selectedRows: selectedRows, table: table })),
+                    headerGroup.headers.map((header) => {
+                        return (React.createElement(HeaderCell, { key: header.id, header: header, table: table }));
+                    }))))),
+                React.createElement(TableBody, null,
                     props.isLoading && (React.createElement("tr", null,
                         React.createElement("td", { colSpan: table.getVisibleFlatColumns().length },
                             React.createElement(LinearProgress, { sx: { width: "100%" } })))),
                     table.getRowModel().rows.map((row) => {
-                        return (React.createElement(TableRow, { key: row.id, row: row, state: tableState, isSelected: !!(selectedRows === null || selectedRows === void 0 ? void 0 : selectedRows.find((r) => r.id === row.id)), rowClassName: getRowClassName(row) }));
+                        return (React.createElement(TableRow, { enableSelection: enableSelection, handleRowSelection: handleRowSelection, key: row.id, row: row, state: tableState, isSelected: !!(selectedRows === null || selectedRows === void 0 ? void 0 : selectedRows.find((r) => r.id === row.id)), rowClassName: getRowClassName(row) }));
                     })))),
         React.createElement(Pagination, { table: table })));
 }

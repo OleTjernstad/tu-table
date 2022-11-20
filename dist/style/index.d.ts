@@ -1,4 +1,4 @@
-import { SxProps, Theme } from "@mui/material";
+import { Theme } from "@mui/material";
 interface OverrideColors {
     disabled?: {
         bg: string;
@@ -25,7 +25,43 @@ interface TableRootStyleProps {
     overrideColors?: OverrideColors;
     theme: Theme;
 }
-export declare function TableRootStyle({ overrideColors, theme, }: TableRootStyleProps): SxProps<Theme>;
+export declare function TableRootStyle({ overrideColors, theme }: TableRootStyleProps): {
+    "& .tu-table--disabled": {
+        backgroundColor: string;
+        "&:hover": {
+            backgroundColor: string;
+        };
+    };
+    "& .tu-table--completed": {
+        backgroundColor: string;
+        "&:hover": {
+            backgroundColor: string;
+        };
+    };
+    "& .tu-table--cut": {
+        backgroundColor: string;
+        "&:hover": {
+            backgroundColor: string;
+        };
+    };
+    "& .tu-table--warning": {
+        backgroundColor: string;
+        "&:hover": {
+            backgroundColor: string;
+        };
+    };
+    "& .tu-table--error": {
+        backgroundColor: string;
+        "&:hover": {
+            backgroundColor: string;
+        };
+    };
+    "& .tu-table-selectable": {
+        "&:hover": {
+            boxShadow: string;
+        };
+    };
+};
 export declare enum ColorStyleOptions {
     completed = "completed",
     disabled = "disabled",
