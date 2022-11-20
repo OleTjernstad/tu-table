@@ -26,7 +26,9 @@ import {
   useEffect,
   useState,
 } from "react";
+import { SxProps, Theme } from "@mui/material";
 
+import Box from "@mui/material/Box";
 import { ColumnSelectRT } from "./utils";
 import { HeaderCell } from "./components/header";
 import LinearProgress from "@mui/material/LinearProgress";
@@ -56,9 +58,10 @@ interface TableProperties<T extends Record<string, unknown>>
   setTableState: (
     value: TableState | ((val: TableState) => TableState)
   ) => void;
+  tableContainerStyle: SxProps<Theme>;
 }
 
-export function GroupTable<T extends Record<string, unknown>>(
+export function TuTable<T extends Record<string, unknown>>(
   props: PropsWithChildren<TableProperties<T>>
 ): ReactElement {
   const {
@@ -71,8 +74,8 @@ export function GroupTable<T extends Record<string, unknown>>(
     enableSelection,
     setTableState,
     tableState,
+    tableContainerStyle,
   } = props;
-  //   const classes2 = useTableStyles();
 
   //   /**Get saved table settings */
   //   const [tableState, setTableState] = useTableState<TableState>(tableKey, {
@@ -272,20 +275,11 @@ export function GroupTable<T extends Record<string, unknown>>(
 
   return (
     <>
-      <TableContainer
-        component={Paper}
-        //   className={classes2.root}
-      >
-        <div
-        // className={classes2.tools}
-        >
-          <div
-          //   className={classes2.pasteTool}
-          >
-            {children}
-          </div>
+      <TableContainer component={Paper} sx={tableContainerStyle}>
+        <Box sx={{ display: "flex", height: "4em" }}>
+          <Box sx={{ flexGrow: 1 }}>{children}</Box>
           <ColumnSelectRT instance={table} />
-        </div>
+        </Box>
         <Table
           style={{ overflowX: "auto" }}
           role="grid"
