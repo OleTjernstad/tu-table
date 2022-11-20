@@ -29,6 +29,7 @@ import {
 import { SxProps, Theme } from "@mui/material";
 
 import Box from "@mui/material/Box";
+import { ColorStyleOptions } from "./style";
 import { ColumnSelectRT } from "./utils";
 import { HeaderCell } from "./components/header";
 import LinearProgress from "@mui/material/LinearProgress";
@@ -48,7 +49,7 @@ interface TableProperties<T extends Record<string, unknown>>
   //   defaultGrouping: string[];
   //   defaultVisibilityState: Record<string, boolean>;
   children?: React.ReactNode;
-  getRowStyling?: (row: Row<T>) => string | undefined;
+  getRowStyling?: (row: Row<T>) => ColorStyleOptions | undefined;
   setSelected?: (rows: Row<T>[]) => void;
   selectedIds?: number[];
   preserveSelected?: boolean;
@@ -149,7 +150,7 @@ export function TuTable<T extends Record<string, unknown>>(
     if (getRowStyling !== undefined) {
       const className = getRowStyling(row);
       if (className !== undefined) {
-        return `slk-table--${className}`;
+        return `tu-table--${className}`;
       }
     }
     return "";

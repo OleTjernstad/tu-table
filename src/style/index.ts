@@ -1,4 +1,4 @@
-import { SxProps, Theme } from "@mui/material";
+import { Theme } from "@mui/material";
 
 interface OverrideColors {
   disabled?: {
@@ -26,10 +26,7 @@ interface TableRootStyleProps {
   overrideColors?: OverrideColors;
   theme: Theme;
 }
-export function TableRootStyle({
-  overrideColors,
-  theme,
-}: TableRootStyleProps): SxProps<Theme> {
+export function TableRootStyle({ overrideColors, theme }: TableRootStyleProps) {
   return {
     "& .tu-table--disabled": {
       backgroundColor: overrideColors?.disabled
