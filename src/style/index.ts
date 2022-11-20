@@ -23,44 +23,62 @@ interface OverrideColors {
   };
 }
 interface TableRootStyleProps {
-  overrideColors: OverrideColors;
+  overrideColors?: OverrideColors;
   theme: Theme;
 }
 export function TableRootStyle({
-  overrideColors: { disabled, completed, cut, warning, error },
+  overrideColors,
   theme,
 }: TableRootStyleProps): SxProps<Theme> {
   return {
     "& .tu-table--disabled": {
-      backgroundColor: disabled ? disabled.bg : theme.palette.grey[600],
+      backgroundColor: overrideColors?.disabled
+        ? overrideColors.disabled.bg
+        : theme.palette.grey[600],
       "&:hover": {
-        backgroundColor: disabled ? disabled.hover : theme.palette.grey[600],
+        backgroundColor: overrideColors?.disabled
+          ? overrideColors.disabled.hover
+          : theme.palette.grey[600],
       },
     },
     "& .tu-table--completed": {
-      backgroundColor: completed ? completed.bg : theme.palette.success.main,
+      backgroundColor: overrideColors?.completed
+        ? overrideColors.completed.bg
+        : theme.palette.success.main,
       "&:hover": {
-        backgroundColor: completed
-          ? completed.hover
+        backgroundColor: overrideColors?.completed
+          ? overrideColors.completed.hover
           : theme.palette.success.light,
       },
     },
     "& .tu-table--cut": {
-      backgroundColor: cut ? cut.bg : theme.palette.warning.main,
+      backgroundColor: overrideColors?.cut
+        ? overrideColors.cut.bg
+        : theme.palette.warning.main,
       "&:hover": {
-        backgroundColor: cut ? cut.bg : theme.palette.warning.light,
+        backgroundColor: overrideColors?.cut
+          ? overrideColors.cut.bg
+          : theme.palette.warning.light,
       },
     },
     "& .tu-table--warning": {
-      backgroundColor: warning ? warning.bg : theme.palette.warning.main,
+      backgroundColor: overrideColors?.warning
+        ? overrideColors.warning.bg
+        : theme.palette.warning.main,
       "&:hover": {
-        backgroundColor: warning ? warning.bg : theme.palette.warning.light,
+        backgroundColor: overrideColors?.warning
+          ? overrideColors.warning.bg
+          : theme.palette.warning.light,
       },
     },
     "& .tu-table--error": {
-      backgroundColor: error ? error.bg : theme.palette.error.main,
+      backgroundColor: overrideColors?.error
+        ? overrideColors.error.bg
+        : theme.palette.error.main,
       "&:hover": {
-        backgroundColor: error ? error.bg : theme.palette.error.light,
+        backgroundColor: overrideColors?.error
+          ? overrideColors.error.bg
+          : theme.palette.error.light,
       },
     },
     "& .tu-table-selectable": {

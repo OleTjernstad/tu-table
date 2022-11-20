@@ -22,10 +22,10 @@ interface OverrideColors {
     };
 }
 interface TableRootStyleProps {
-    overrideColors: OverrideColors;
+    overrideColors?: OverrideColors;
     theme: Theme;
 }
-export declare function TableRootStyle({ overrideColors: { disabled, completed, cut, warning, error }, theme, }: TableRootStyleProps): SxProps<Theme>;
+export declare function TableRootStyle({ overrideColors, theme, }: TableRootStyleProps): SxProps<Theme>;
 export declare enum ColorStyleOptions {
     completed = "completed",
     disabled = "disabled",
