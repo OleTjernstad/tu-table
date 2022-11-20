@@ -2,6 +2,7 @@
 import { Cell, Row, TableState, flexRender } from "@tanstack/react-table";
 
 import Button from "@mui/material/Button";
+import { CheckboxCell } from "./selection";
 import React from "react";
 import TableCellMui from "@mui/material/TableCell";
 import TableRowMui from "@mui/material/TableRow";
@@ -13,12 +14,19 @@ interface TableRowProps<T extends {}> {
   state: TableState;
   isSelected: boolean;
   rowClassName: string;
+  enableSelection: boolean | undefined;
+  handleRowSelection: (
+    event: React.MouseEvent<HTMLButtonElement>,
+    row: Row<T>
+  ) => void;
 }
 export function TableRow<T extends {}>({
   row,
   state,
   rowClassName,
   isSelected,
+  enableSelection,
+  handleRowSelection,
 }: TableRowProps<T>) {
   return (
     <TableRowMui
@@ -28,9 +36,16 @@ export function TableRow<T extends {}>({
         cursor: !row.getIsGrouped() ? "pointer" : "auto",
       }}
       className={`${rowClassName} ${
-        !row.getIsGrouped() && "slk-table-selectable"
+        !row.getIsGrouped() && "tu-table-selectable"
       } ${isSelected && "Mui-selected"}`}
     >
+      {enableSelection && !row.getIsGrouped() && (
+        <CheckboxCell<T>
+          handleRowSelection={handleRowSelection}
+          row={row}
+          isSelected={isSelected}
+        />
+      )}
       {row.getVisibleCells().map((cell) => {
         return <TableCell key={cell.id} cell={cell} state={state} />;
       })}

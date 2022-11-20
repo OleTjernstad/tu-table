@@ -29,6 +29,7 @@ import {
 import { SxProps, Theme } from "@mui/material";
 
 import Box from "@mui/material/Box";
+import { CheckboxHeaderCell } from "./components/selection";
 import { ColorStyleOptions } from "./style";
 import { ColumnSelectRT } from "./utils";
 import { HeaderCell } from "./components/header";
@@ -78,20 +79,19 @@ export function TuTable<T extends Record<string, unknown>>(
     tableContainerStyle,
   } = props;
 
-  //   /**Get saved table settings */
-  //   const [tableState, setTableState] = useTableState<TableState>(tableKey, {
-  //     grouping: defaultGrouping,
-  //     columnVisibility: defaultVisibilityState,
-  //     expanded: {},
-  //   } as TableState);
-
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
   function updateGrouping(update: Updater<GroupingState>) {
     const grouping =
       update instanceof Function ? update(tableState.grouping) : update;
     setTableState((prev) => {
       return { ...prev, grouping };
+    });
+  }
+
+  function updateColumnFilters(update: Updater<ColumnFiltersState>) {
+    const columnFilters =
+      update instanceof Function ? update(tableState.columnFilters) : update;
+    setTableState((prev) => {
+      return { ...prev, columnFilters };
     });
   }
 
@@ -126,11 +126,11 @@ export function TuTable<T extends Record<string, unknown>>(
     columns,
     getCoreRowModel: getCoreRowModel(),
     autoResetExpanded: false,
-    state: { ...tableState, columnFilters },
+    state: tableState,
     enableRowSelection: true,
     enableMultiRowSelection: true,
     enableSubRowSelection: true,
-    onColumnFiltersChange: setColumnFilters,
+    onColumnFiltersChange: updateColumnFilters,
     onGroupingChange: updateGrouping,
     onColumnVisibilityChange: updateVisibility,
     onExpandedChange: updateExpanded,
@@ -156,38 +156,6 @@ export function TuTable<T extends Record<string, unknown>>(
     return "";
   }
 
-  /**
-   * Gets the current row being clicked from the 'data-row-index' attribute on the parent <tr>
-   * element for any click event. Using this approach to avoid row re-renders whenever click handler
-   * callbacks are updated
-   *
-   * @param target  The Target HTMLElement (event.target) that raised the event
-   * @param rows    The list of sorted rows
-   */
-  function getRowFromEvent(target: HTMLElement, rows: Row<T>[]) {
-    // skip if this is group header
-    const isGroup =
-      target.closest("tr")?.getAttribute("data-row-is-group-row") ?? "";
-    if (isGroup) return null;
-
-    // Skip if this is action cell
-    const isAction = target.closest("td")?.getAttribute("data-is-action") ?? "";
-    if (isAction) return null;
-
-    const rowIndex = parseInt(
-      target.closest("tr")?.getAttribute("data-row-index") ?? ""
-    );
-
-    const filteredRows = rows.filter(
-      (row) => row.index === rowIndex && !row.getIsGrouped()
-    );
-    if (filteredRows.length) {
-      // Should only be one result
-      return filteredRows[0];
-    }
-    return null;
-  }
-
   const [selectedRows, setSelectedRows] = useState<Row<T>[]>([]);
 
   useEffect(() => {
@@ -207,7 +175,7 @@ export function TuTable<T extends Record<string, unknown>>(
    * 3. Single Click - Select only one row
    */
   const handleRowSelection = useCallback(
-    (event: React.MouseEvent<HTMLTableSectionElement>, row: Row<T>) => {
+    (event: React.MouseEvent<HTMLButtonElement>, row: Row<T>) => {
       // See if row is already selected
       const selectedRowIds = selectedRows?.map((r) => r.id) ?? [];
       const selectIndex = selectedRowIds.indexOf(row.id);
@@ -290,6 +258,14 @@ export function TuTable<T extends Record<string, unknown>>(
           <TableHead>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRowMui key={headerGroup.id}>
+                {enableSelection && (
+                  <CheckboxHeaderCell
+                    setSelected={setSelected}
+                    setSelectedRows={setSelectedRows}
+                    selectedRows={selectedRows}
+                    table={table}
+                  />
+                )}
                 {headerGroup.headers.map((header) => {
                   return (
                     <HeaderCell key={header.id} header={header} table={table} />
@@ -298,18 +274,7 @@ export function TuTable<T extends Record<string, unknown>>(
               </TableRowMui>
             ))}
           </TableHead>
-          <TableBody
-            onClick={(event) => {
-              const row = getRowFromEvent(
-                event.target as HTMLElement,
-                table.getRowModel().rows
-              );
-
-              if (row) {
-                handleRowSelection(event, row);
-              }
-            }}
-          >
+          <TableBody>
             {props.isLoading && (
               <tr>
                 <td colSpan={table.getVisibleFlatColumns().length}>
@@ -320,6 +285,8 @@ export function TuTable<T extends Record<string, unknown>>(
             {table.getRowModel().rows.map((row) => {
               return (
                 <TableRow<T>
+                  enableSelection={enableSelection}
+                  handleRowSelection={handleRowSelection}
                   key={row.id}
                   row={row}
                   state={tableState}
