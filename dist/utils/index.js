@@ -42,29 +42,6 @@ export function ColumnSelectRT({ instance, }) {
             React.createElement(DialogActions, null,
                 React.createElement(Button, { autoFocus: true, onClick: () => setOpen(false) }, "lukk")))));
 }
-export const RowAction = ({ actionItems, LinkComponent }) => {
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const close = () => {
-        setAnchorEl(null);
-    };
-    return (React.createElement("div", null,
-        React.createElement(IconButton, { "aria-label": "open menu", "aria-controls": "simple-menu", "aria-haspopup": "true", onClick: handleClick, size: "small" },
-            React.createElement(MoreVertIcon, null)),
-        React.createElement(Menu, { id: "simple-menu", anchorEl: anchorEl, keepMounted: true, open: Boolean(anchorEl), onClose: close }, actionItems.map((ai) => {
-            if (ai.skip) {
-                return React.createElement("div", { key: ai.name });
-            }
-            return (React.createElement(MenuItem, { key: ai.name }, ai.action !== undefined ? (React.createElement(Button, { onClick: () => {
-                    close();
-                    if (ai.action !== undefined) {
-                        ai.action();
-                    }
-                }, color: "primary", startIcon: ai.icon }, ai.name)) : ai.to !== undefined ? (React.createElement(LinkComponent, { to: ai.to, icon: ai.icon, label: ai.name })) : (React.createElement("div", null))));
-        }))));
-};
 export function ColumnAction({ column, table, }) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const handleClick = (event) => {

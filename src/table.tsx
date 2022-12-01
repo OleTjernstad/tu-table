@@ -2,6 +2,7 @@ import {
   ColumnFiltersState,
   ExpandedState,
   GroupingState,
+  PaginationState,
   Row,
   SortingState,
   TableOptions,
@@ -120,6 +121,15 @@ export function TuTable<T extends Record<string, unknown>>(
     });
   }
 
+  function updatePagination(update: Updater<PaginationState>) {
+    const pagination =
+      update instanceof Function ? update(tableState.pagination) : update;
+
+    setTableState((prev) => {
+      return { ...prev, pagination };
+    });
+  }
+
   /**Table instance */
   const table = useReactTable<T>({
     ...props,
@@ -138,6 +148,7 @@ export function TuTable<T extends Record<string, unknown>>(
     getExpandedRowModel: getExpandedRowModel(),
     getGroupedRowModel: getGroupedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: updatePagination,
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
