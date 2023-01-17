@@ -44,6 +44,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import { TableRow } from "./components/group";
 import TableRowMui from "@mui/material/TableRow";
+import { useDebounce } from "./hooks/useDebounce";
 
 interface TableProperties<T extends Record<string, unknown>>
   extends Omit<TableOptions<T>, "getCoreRowModel"> {
@@ -57,10 +58,9 @@ interface TableProperties<T extends Record<string, unknown>>
   preserveSelected?: boolean;
   isLoading: boolean;
   enableSelection?: boolean;
-  tableState: TableState;
-  setTableState: (
-    value: TableState | ((val: TableState) => TableState)
-  ) => void;
+  initialTableState: TableState;
+  savedTableState?: TableState;
+  saveTableState?: (state: TableState) => void;
   tableContainerStyle: SxProps<Theme>;
 }
 
@@ -75,10 +75,32 @@ export function TuTable<T extends Record<string, unknown>>(
     preserveSelected,
     selectedIds,
     enableSelection,
-    setTableState,
-    tableState,
+    initialTableState,
+    savedTableState,
     tableContainerStyle,
+    saveTableState,
   } = props;
+
+  // State to store our value
+  // Pass initial state function to useState so logic is only executed once
+  const [tableState, setTableState] = useState<TableState>(() => {
+    try {
+      return savedTableState ? savedTableState : initialTableState;
+    } catch (error) {
+      // If error also return initialValue
+      console.log(error);
+      return initialTableState;
+    }
+  });
+
+  const debouncedState = useDebounce<TableState>(tableState, 1500);
+
+  useEffect(() => {
+    const val = debouncedState;
+
+    if (saveTableState) saveTableState(val);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedState]);
 
   function updateGrouping(update: Updater<GroupingState>) {
     const grouping =
@@ -122,12 +144,14 @@ export function TuTable<T extends Record<string, unknown>>(
   }
 
   function updatePagination(update: Updater<PaginationState>) {
-    const pagination =
-      update instanceof Function ? update(tableState.pagination) : update;
+    if (tableState.pagination) {
+      const pagination =
+        update instanceof Function ? update(tableState.pagination) : update;
 
-    setTableState((prev) => {
-      return { ...prev, pagination };
-    });
+      setTableState((prev) => {
+        return { ...prev, pagination };
+      });
+    }
   }
 
   /**Table instance */
