@@ -14,8 +14,28 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import { TableRow } from "./components/group";
 import TableRowMui from "@mui/material/TableRow";
+import { useDebounce } from "./hooks/useDebounce";
 export function TuTable(props) {
-    const { columns, children, getRowStyling, setSelected, preserveSelected, selectedIds, enableSelection, setTableState, tableState, tableContainerStyle, } = props;
+    const { columns, children, getRowStyling, setSelected, preserveSelected, selectedIds, enableSelection, initialTableState, savedTableState, tableContainerStyle, saveTableState, } = props;
+    // State to store our value
+    // Pass initial state function to useState so logic is only executed once
+    const [tableState, setTableState] = useState(() => {
+        try {
+            return savedTableState ? savedTableState : initialTableState;
+        }
+        catch (error) {
+            // If error also return initialValue
+            console.log(error);
+            return initialTableState;
+        }
+    });
+    const debouncedState = useDebounce(tableState, 1500);
+    useEffect(() => {
+        const val = debouncedState;
+        if (saveTableState)
+            saveTableState(val);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debouncedState]);
     function updateGrouping(update) {
         const grouping = update instanceof Function ? update(tableState.grouping) : update;
         setTableState((prev) => {
@@ -47,10 +67,12 @@ export function TuTable(props) {
         });
     }
     function updatePagination(update) {
-        const pagination = update instanceof Function ? update(tableState.pagination) : update;
-        setTableState((prev) => {
-            return Object.assign(Object.assign({}, prev), { pagination });
-        });
+        if (tableState.pagination) {
+            const pagination = update instanceof Function ? update(tableState.pagination) : update;
+            setTableState((prev) => {
+                return Object.assign(Object.assign({}, prev), { pagination });
+            });
+        }
     }
     /**Table instance */
     const table = useReactTable(Object.assign(Object.assign({}, props), { columns, getCoreRowModel: getCoreRowModel(), autoResetExpanded: false, state: tableState, enableRowSelection: true, enableMultiRowSelection: true, enableSubRowSelection: true, onColumnFiltersChange: updateColumnFilters, onGroupingChange: updateGrouping, onColumnVisibilityChange: updateVisibility, onExpandedChange: updateExpanded, onSortingChange: updateSorting, getExpandedRowModel: getExpandedRowModel(), getGroupedRowModel: getGroupedRowModel(), getPaginationRowModel: getPaginationRowModel(), onPaginationChange: updatePagination, getFilteredRowModel: getFilteredRowModel(), getSortedRowModel: getSortedRowModel(), getFacetedRowModel: getFacetedRowModel(), getFacetedUniqueValues: getFacetedUniqueValues(), getFacetedMinMaxValues: getFacetedMinMaxValues(), debugTable: false }));
