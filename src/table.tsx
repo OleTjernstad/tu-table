@@ -144,12 +144,14 @@ export function TuTable<T extends Record<string, unknown>>(
   }
 
   function updatePagination(update: Updater<PaginationState>) {
-    const pagination =
-      update instanceof Function ? update(tableState.pagination) : update;
+    if (tableState.pagination) {
+      const pagination =
+        update instanceof Function ? update(tableState.pagination) : update;
 
-    setTableState((prev) => {
-      return { ...prev, pagination };
-    });
+      setTableState((prev) => {
+        return { ...prev, pagination };
+      });
+    }
   }
 
   /**Table instance */
