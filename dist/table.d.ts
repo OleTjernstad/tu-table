@@ -11,8 +11,9 @@ interface TableProperties<T extends Record<string, unknown>> extends Omit<TableO
     preserveSelected?: boolean;
     isLoading: boolean;
     enableSelection?: boolean;
-    tableState: TableState;
-    setTableState: (value: TableState | ((val: TableState) => TableState)) => void;
+    initialTableState: TableState;
+    savedTableState?: TableState;
+    saveTableState?: (state: TableState) => void;
     tableContainerStyle: SxProps<Theme>;
 }
 export declare function TuTable<T extends Record<string, unknown>>(props: PropsWithChildren<TableProperties<T>>): ReactElement;
