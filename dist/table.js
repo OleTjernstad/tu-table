@@ -1,4 +1,4 @@
-import { getCoreRowModel, getExpandedRowModel, getFacetedMinMaxValues, getFacetedRowModel, getFacetedUniqueValues, getFilteredRowModel, getGroupedRowModel, getPaginationRowModel, getSortedRowModel, useReactTable, } from "@tanstack/react-table";
+import { getCoreRowModel, getExpandedRowModel, getFacetedMinMaxValues, getFacetedRowModel, getFacetedUniqueValues, getFilteredRowModel, getGroupedRowModel, getSortedRowModel, useReactTable, } from "@tanstack/react-table";
 import { useCallback, useEffect, useState, } from "react";
 import Box from "@mui/material/Box";
 import { CheckboxHeaderCell } from "./components/selection";
@@ -53,7 +53,7 @@ export function TuTable(props) {
         });
     }
     /**Table instance */
-    const table = useReactTable(Object.assign(Object.assign({}, props), { columns, getCoreRowModel: getCoreRowModel(), autoResetExpanded: false, state: tableState, enableRowSelection: true, enableMultiRowSelection: true, enableSubRowSelection: true, onColumnFiltersChange: updateColumnFilters, onGroupingChange: updateGrouping, onColumnVisibilityChange: updateVisibility, onExpandedChange: updateExpanded, onSortingChange: updateSorting, getExpandedRowModel: getExpandedRowModel(), getGroupedRowModel: getGroupedRowModel(), getPaginationRowModel: getPaginationRowModel(), onPaginationChange: updatePagination, getFilteredRowModel: getFilteredRowModel(), getSortedRowModel: getSortedRowModel(), getFacetedRowModel: getFacetedRowModel(), getFacetedUniqueValues: getFacetedUniqueValues(), getFacetedMinMaxValues: getFacetedMinMaxValues(), debugTable: false }));
+    const table = useReactTable(Object.assign(Object.assign({}, props), { columns, getCoreRowModel: getCoreRowModel(), autoResetExpanded: false, state: tableState, enableRowSelection: true, enableMultiRowSelection: true, enableSubRowSelection: true, manualPagination: true, onColumnFiltersChange: updateColumnFilters, onGroupingChange: updateGrouping, onColumnVisibilityChange: updateVisibility, onExpandedChange: updateExpanded, onSortingChange: updateSorting, getExpandedRowModel: getExpandedRowModel(), getGroupedRowModel: getGroupedRowModel(), onPaginationChange: updatePagination, getFilteredRowModel: getFilteredRowModel(), getSortedRowModel: getSortedRowModel(), getFacetedRowModel: getFacetedRowModel(), getFacetedUniqueValues: getFacetedUniqueValues(), getFacetedMinMaxValues: getFacetedMinMaxValues(), debugTable: false }));
     function getRowClassName(row) {
         if (getRowStyling !== undefined) {
             const className = getRowStyling(row);

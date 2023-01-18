@@ -16,7 +16,6 @@ import {
   getFacetedUniqueValues,
   getFilteredRowModel,
   getGroupedRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -140,6 +139,7 @@ export function TuTable<T extends Record<string, unknown>>(
     enableRowSelection: true,
     enableMultiRowSelection: true,
     enableSubRowSelection: true,
+    manualPagination: true,
     onColumnFiltersChange: updateColumnFilters,
     onGroupingChange: updateGrouping,
     onColumnVisibilityChange: updateVisibility,
@@ -147,7 +147,6 @@ export function TuTable<T extends Record<string, unknown>>(
     onSortingChange: updateSorting,
     getExpandedRowModel: getExpandedRowModel(),
     getGroupedRowModel: getGroupedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: updatePagination,
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
