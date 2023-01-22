@@ -24,7 +24,7 @@ export function TuTable(props) {
     useEffect(() => {
         setPagination(tableState.pagination);
     }, []);
-    const debouncedStatement = useDebounce({ pageIndex, pageSize }, 2000);
+    const debouncedStatement = useDebounce({ pageIndex, pageSize }, 500);
     useEffect(() => {
         setTableState((prev) => {
             return Object.assign(Object.assign({}, prev), { pagination: debouncedStatement });
