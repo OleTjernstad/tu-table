@@ -16,6 +16,7 @@ import {
   getFacetedUniqueValues,
   getFilteredRowModel,
   getGroupedRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -43,6 +44,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import { TableRow } from "./components/group";
 import TableRowMui from "@mui/material/TableRow";
+import { useDebounce } from "./hooks/useDebounce";
 
 interface TableProperties<T extends Record<string, unknown>>
   extends Omit<TableOptions<T>, "getCoreRowModel"> {
@@ -78,6 +80,27 @@ export function TuTable<T extends Record<string, unknown>>(
     tableState,
     tableContainerStyle,
   } = props;
+
+  const [{ pageIndex, pageSize }, setPagination] =
+    React.useState<PaginationState>({
+      pageIndex: 0,
+      pageSize: 10,
+    });
+
+  useEffect(() => {
+    setPagination(tableState.pagination);
+  }, []);
+
+  const debouncedStatement = useDebounce<PaginationState>(
+    { pageIndex, pageSize },
+    2000
+  );
+
+  useEffect(() => {
+    setTableState((prev) => {
+      return { ...prev, pagination: debouncedStatement };
+    });
+  }, [debouncedStatement]);
 
   function updateGrouping(update: Updater<GroupingState>) {
     const grouping =
@@ -120,15 +143,6 @@ export function TuTable<T extends Record<string, unknown>>(
     });
   }
 
-  function updatePagination(update: Updater<PaginationState>) {
-    const pagination =
-      update instanceof Function ? update(tableState.pagination) : update;
-
-    setTableState((prev) => {
-      return { ...prev, pagination };
-    });
-  }
-
   /**Table instance */
   const table = useReactTable<T>({
     ...props,
@@ -146,7 +160,8 @@ export function TuTable<T extends Record<string, unknown>>(
     onSortingChange: updateSorting,
     getExpandedRowModel: getExpandedRowModel(),
     getGroupedRowModel: getGroupedRowModel(),
-    onPaginationChange: updatePagination,
+    getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),

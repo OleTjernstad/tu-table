@@ -1,6 +1,6 @@
 {
   "name": "@tjernstad-utvikling/table",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "Base table for my projects",
   "main": "dist/index.js",
   "scripts": {

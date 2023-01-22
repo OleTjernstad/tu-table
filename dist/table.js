@@ -1,4 +1,4 @@
-import { getCoreRowModel, getExpandedRowModel, getFacetedMinMaxValues, getFacetedRowModel, getFacetedUniqueValues, getFilteredRowModel, getGroupedRowModel, getSortedRowModel, useReactTable, } from "@tanstack/react-table";
+import { getCoreRowModel, getExpandedRowModel, getFacetedMinMaxValues, getFacetedRowModel, getFacetedUniqueValues, getFilteredRowModel, getGroupedRowModel, getPaginationRowModel, getSortedRowModel, useReactTable, } from "@tanstack/react-table";
 import { useCallback, useEffect, useState, } from "react";
 import Box from "@mui/material/Box";
 import { CheckboxHeaderCell } from "./components/selection";
@@ -14,8 +14,22 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import { TableRow } from "./components/group";
 import TableRowMui from "@mui/material/TableRow";
+import { useDebounce } from "./hooks/useDebounce";
 export function TuTable(props) {
     const { columns, children, getRowStyling, setSelected, preserveSelected, selectedIds, enableSelection, setTableState, tableState, tableContainerStyle, } = props;
+    const [{ pageIndex, pageSize }, setPagination] = React.useState({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+    useEffect(() => {
+        setPagination(tableState.pagination);
+    }, []);
+    const debouncedStatement = useDebounce({ pageIndex, pageSize }, 2000);
+    useEffect(() => {
+        setTableState((prev) => {
+            return Object.assign(Object.assign({}, prev), { pagination: debouncedStatement });
+        });
+    }, [debouncedStatement]);
     function updateGrouping(update) {
         const grouping = update instanceof Function ? update(tableState.grouping) : update;
         setTableState((prev) => {
@@ -46,14 +60,8 @@ export function TuTable(props) {
             return Object.assign(Object.assign({}, prev), { sorting });
         });
     }
-    function updatePagination(update) {
-        const pagination = update instanceof Function ? update(tableState.pagination) : update;
-        setTableState((prev) => {
-            return Object.assign(Object.assign({}, prev), { pagination });
-        });
-    }
     /**Table instance */
-    const table = useReactTable(Object.assign(Object.assign({}, props), { columns, getCoreRowModel: getCoreRowModel(), autoResetExpanded: false, state: tableState, enableRowSelection: true, enableMultiRowSelection: true, enableSubRowSelection: true, onColumnFiltersChange: updateColumnFilters, onGroupingChange: updateGrouping, onColumnVisibilityChange: updateVisibility, onExpandedChange: updateExpanded, onSortingChange: updateSorting, getExpandedRowModel: getExpandedRowModel(), getGroupedRowModel: getGroupedRowModel(), onPaginationChange: updatePagination, getFilteredRowModel: getFilteredRowModel(), getSortedRowModel: getSortedRowModel(), getFacetedRowModel: getFacetedRowModel(), getFacetedUniqueValues: getFacetedUniqueValues(), getFacetedMinMaxValues: getFacetedMinMaxValues(), debugTable: false }));
+    const table = useReactTable(Object.assign(Object.assign({}, props), { columns, getCoreRowModel: getCoreRowModel(), autoResetExpanded: false, state: tableState, enableRowSelection: true, enableMultiRowSelection: true, enableSubRowSelection: true, onColumnFiltersChange: updateColumnFilters, onGroupingChange: updateGrouping, onColumnVisibilityChange: updateVisibility, onExpandedChange: updateExpanded, onSortingChange: updateSorting, getExpandedRowModel: getExpandedRowModel(), getGroupedRowModel: getGroupedRowModel(), getPaginationRowModel: getPaginationRowModel(), onPaginationChange: setPagination, getFilteredRowModel: getFilteredRowModel(), getSortedRowModel: getSortedRowModel(), getFacetedRowModel: getFacetedRowModel(), getFacetedUniqueValues: getFacetedUniqueValues(), getFacetedMinMaxValues: getFacetedMinMaxValues(), debugTable: false }));
     function getRowClassName(row) {
         if (getRowStyling !== undefined) {
             const className = getRowStyling(row);
