@@ -139,7 +139,6 @@ export function TuTable<T extends Record<string, unknown>>(
     enableRowSelection: true,
     enableMultiRowSelection: true,
     enableSubRowSelection: true,
-    manualPagination: true,
     onColumnFiltersChange: updateColumnFilters,
     onGroupingChange: updateGrouping,
     onColumnVisibilityChange: updateVisibility,
