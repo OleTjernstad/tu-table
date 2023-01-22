@@ -93,7 +93,7 @@ export function TuTable<T extends Record<string, unknown>>(
 
   const debouncedStatement = useDebounce<PaginationState>(
     { pageIndex, pageSize },
-    2000
+    500
   );
 
   useEffect(() => {
