@@ -149,7 +149,7 @@ export function TuTable<T extends Record<string, unknown>>(
     columns,
     getCoreRowModel: getCoreRowModel(),
     autoResetExpanded: false,
-    state: tableState,
+    state: { ...tableState, pagination: { pageIndex, pageSize } },
     enableRowSelection: true,
     enableMultiRowSelection: true,
     enableSubRowSelection: true,
