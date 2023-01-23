@@ -14,7 +14,7 @@ interface FilterProps<T extends {}> {
   table: Table<T>;
 }
 
-export function Filter<T extends {}>({ column, table }: FilterProps<T>) {
+export function ColumnFilter<T extends {}>({ column, table }: FilterProps<T>) {
   const firstValue = table
     .getPreFilteredRowModel()
     .flatRows[0]?.getValue(column.id);

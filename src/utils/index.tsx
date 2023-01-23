@@ -4,11 +4,11 @@ import React, { ReactElement } from "react";
 
 import Button from "@mui/material/Button";
 import ClearIcon from "@mui/icons-material/Clear";
+import { ColumnFilter } from "../components/columFilter";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Filter } from "../components/filter";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormGroup from "@mui/material/FormGroup";
@@ -162,7 +162,7 @@ export function ColumnAction<T extends {}>({
         ]}
         {column.getCanFilter() && (
           <MenuItem>
-            <Filter column={column} table={table} />
+            <ColumnFilter column={column} table={table} />
           </MenuItem>
         )}
       </Menu>

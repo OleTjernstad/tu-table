@@ -1,8 +1,10 @@
 import { getCoreRowModel, getExpandedRowModel, getFacetedMinMaxValues, getFacetedRowModel, getFacetedUniqueValues, getFilteredRowModel, getGroupedRowModel, getPaginationRowModel, getSortedRowModel, useReactTable, } from "@tanstack/react-table";
 import { useCallback, useEffect, useState, } from "react";
+import { rankItem, } from "@tanstack/match-sorter-utils";
 import Box from "@mui/material/Box";
 import { CheckboxHeaderCell } from "./components/selection";
 import { ColumnSelectRT } from "./utils";
+import { DebouncedInput } from "./components/input";
 import { HeaderCell } from "./components/header";
 import LinearProgress from "@mui/material/LinearProgress";
 import { Pagination } from "./components/pagination";
@@ -15,6 +17,16 @@ import TableHead from "@mui/material/TableHead";
 import { TableRow } from "./components/group";
 import TableRowMui from "@mui/material/TableRow";
 import { useDebounce } from "./hooks/useDebounce";
+const fuzzyFilter = (row, columnId, value, addMeta) => {
+    // Rank the item
+    const itemRank = rankItem(row.getValue(columnId), value);
+    // Store the itemRank info
+    addMeta({
+        itemRank,
+    });
+    // Return if the item should be filtered in/out
+    return itemRank.passed;
+};
 export function TuTable(props) {
     const { columns, children, getRowStyling, setSelected, preserveSelected, selectedIds, enableSelection, setTableState, tableState, tableContainerStyle, } = props;
     const [{ pageIndex, pageSize }, setPagination] = React.useState({
@@ -24,12 +36,13 @@ export function TuTable(props) {
     useEffect(() => {
         setPagination(tableState.pagination);
     }, []);
-    const debouncedStatement = useDebounce({ pageIndex, pageSize }, 500);
+    const debouncedStatement = useDebounce({ pageIndex, pageSize }, 1000);
     useEffect(() => {
         setTableState((prev) => {
             return Object.assign(Object.assign({}, prev), { pagination: debouncedStatement });
         });
     }, [debouncedStatement]);
+    const [globalFilter, setGlobalFilter] = React.useState("");
     function updateGrouping(update) {
         const grouping = update instanceof Function ? update(tableState.grouping) : update;
         setTableState((prev) => {
@@ -61,7 +74,9 @@ export function TuTable(props) {
         });
     }
     /**Table instance */
-    const table = useReactTable(Object.assign(Object.assign({}, props), { columns, getCoreRowModel: getCoreRowModel(), autoResetExpanded: false, state: Object.assign(Object.assign({}, tableState), { pagination: { pageIndex, pageSize } }), enableRowSelection: true, enableMultiRowSelection: true, enableSubRowSelection: true, onColumnFiltersChange: updateColumnFilters, onGroupingChange: updateGrouping, onColumnVisibilityChange: updateVisibility, onExpandedChange: updateExpanded, onSortingChange: updateSorting, getExpandedRowModel: getExpandedRowModel(), getGroupedRowModel: getGroupedRowModel(), getPaginationRowModel: getPaginationRowModel(), onPaginationChange: setPagination, getFilteredRowModel: getFilteredRowModel(), getSortedRowModel: getSortedRowModel(), getFacetedRowModel: getFacetedRowModel(), getFacetedUniqueValues: getFacetedUniqueValues(), getFacetedMinMaxValues: getFacetedMinMaxValues(), debugTable: false }));
+    const table = useReactTable(Object.assign(Object.assign({}, props), { columns, filterFns: {
+            fuzzy: fuzzyFilter,
+        }, getCoreRowModel: getCoreRowModel(), autoResetExpanded: false, state: Object.assign(Object.assign({}, tableState), { pagination: { pageIndex, pageSize }, globalFilter }), enableRowSelection: true, enableMultiRowSelection: true, enableSubRowSelection: true, onGlobalFilterChange: setGlobalFilter, globalFilterFn: fuzzyFilter, onColumnFiltersChange: updateColumnFilters, onGroupingChange: updateGrouping, onColumnVisibilityChange: updateVisibility, onExpandedChange: updateExpanded, onSortingChange: updateSorting, getExpandedRowModel: getExpandedRowModel(), getGroupedRowModel: getGroupedRowModel(), getPaginationRowModel: getPaginationRowModel(), onPaginationChange: setPagination, getFilteredRowModel: getFilteredRowModel(), getSortedRowModel: getSortedRowModel(), getFacetedRowModel: getFacetedRowModel(), getFacetedUniqueValues: getFacetedUniqueValues(), getFacetedMinMaxValues: getFacetedMinMaxValues(), debugTable: false }));
     function getRowClassName(row) {
         if (getRowStyling !== undefined) {
             const className = getRowStyling(row);
@@ -151,6 +166,7 @@ export function TuTable(props) {
     return (React.createElement(React.Fragment, null,
         React.createElement(TableContainer, { component: Paper, sx: tableContainerStyle },
             React.createElement(Box, { sx: { display: "flex", height: "4em" } },
+                React.createElement(DebouncedInput, { label: "S\u00F8k i alle kolonner", name: "search", value: globalFilter !== null && globalFilter !== void 0 ? globalFilter : "", onChange: (value) => setGlobalFilter(String(value)) }),
                 React.createElement(Box, { sx: { flexGrow: 1 } }, children),
                 React.createElement(ColumnSelectRT, { instance: table })),
             React.createElement(Table, { style: { overflowX: "auto" }, role: "grid", size: "small", "aria-label": "Table" },

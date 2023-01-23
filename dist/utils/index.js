@@ -1,11 +1,11 @@
 import React from "react";
 import Button from "@mui/material/Button";
 import ClearIcon from "@mui/icons-material/Clear";
+import { ColumnFilter } from "../components/columFilter";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Filter } from "../components/filter";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormGroup from "@mui/material/FormGroup";
@@ -63,5 +63,5 @@ export function ColumnAction({ column, table, }) {
                     React.createElement(Button, { disabled: column.getIsSorted() === "desc", variant: "text", startIcon: React.createElement(KeyboardArrowDownIcon, null), onClick: () => column.toggleSorting(true) }, "Sorter synkende")),
             ],
             column.getCanFilter() && (React.createElement(MenuItem, null,
-                React.createElement(Filter, { column: column, table: table }))))));
+                React.createElement(ColumnFilter, { column: column, table: table }))))));
 }

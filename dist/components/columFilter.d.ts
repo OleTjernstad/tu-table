@@ -4,7 +4,7 @@ interface FilterProps<T extends {}> {
     column: Column<T, unknown>;
     table: Table<T>;
 }
-export declare function Filter<T extends {}>({ column, table }: FilterProps<T>): JSX.Element;
+export declare function ColumnFilter<T extends {}>({ column, table }: FilterProps<T>): JSX.Element;
 interface FilterRemoveProps<T extends {}> {
     column: Column<T, unknown>;
     table: Table<T>;

@@ -5,7 +5,7 @@ import { Header, Table, flexRender } from "@tanstack/react-table";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { ColumnAction } from "../utils";
-import { FilterRemove } from "./filter";
+import { FilterRemove } from "./columFilter";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import React from "react";
 import TableCell from "@mui/material/TableCell";

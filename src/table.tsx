@@ -1,6 +1,7 @@
 import {
   ColumnFiltersState,
   ExpandedState,
+  FilterFn,
   GroupingState,
   PaginationState,
   Row,
@@ -27,12 +28,18 @@ import {
   useEffect,
   useState,
 } from "react";
+import {
+  RankingInfo,
+  compareItems,
+  rankItem,
+} from "@tanstack/match-sorter-utils";
 import { SxProps, Theme } from "@mui/material";
 
 import Box from "@mui/material/Box";
 import { CheckboxHeaderCell } from "./components/selection";
 import { ColorStyleOptions } from "./style";
 import { ColumnSelectRT } from "./utils";
+import { DebouncedInput } from "./components/input";
 import { HeaderCell } from "./components/header";
 import LinearProgress from "@mui/material/LinearProgress";
 import { Pagination } from "./components/pagination";
@@ -45,6 +52,19 @@ import TableHead from "@mui/material/TableHead";
 import { TableRow } from "./components/group";
 import TableRowMui from "@mui/material/TableRow";
 import { useDebounce } from "./hooks/useDebounce";
+
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value);
+
+  // Store the itemRank info
+  addMeta({
+    itemRank,
+  });
+
+  // Return if the item should be filtered in/out
+  return itemRank.passed;
+};
 
 interface TableProperties<T extends Record<string, unknown>>
   extends Omit<TableOptions<T>, "getCoreRowModel"> {
@@ -93,7 +113,7 @@ export function TuTable<T extends Record<string, unknown>>(
 
   const debouncedStatement = useDebounce<PaginationState>(
     { pageIndex, pageSize },
-    500
+    1000
   );
 
   useEffect(() => {
@@ -101,6 +121,8 @@ export function TuTable<T extends Record<string, unknown>>(
       return { ...prev, pagination: debouncedStatement };
     });
   }, [debouncedStatement]);
+
+  const [globalFilter, setGlobalFilter] = React.useState("");
 
   function updateGrouping(update: Updater<GroupingState>) {
     const grouping =
@@ -147,12 +169,17 @@ export function TuTable<T extends Record<string, unknown>>(
   const table = useReactTable<T>({
     ...props,
     columns,
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
     getCoreRowModel: getCoreRowModel(),
     autoResetExpanded: false,
-    state: { ...tableState, pagination: { pageIndex, pageSize } },
+    state: { ...tableState, pagination: { pageIndex, pageSize }, globalFilter },
     enableRowSelection: true,
     enableMultiRowSelection: true,
     enableSubRowSelection: true,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: fuzzyFilter,
     onColumnFiltersChange: updateColumnFilters,
     onGroupingChange: updateGrouping,
     onColumnVisibilityChange: updateVisibility,
@@ -270,6 +297,12 @@ export function TuTable<T extends Record<string, unknown>>(
     <>
       <TableContainer component={Paper} sx={tableContainerStyle}>
         <Box sx={{ display: "flex", height: "4em" }}>
+          <DebouncedInput
+            label="Søk i alle kolonner"
+            name="search"
+            value={globalFilter ?? ""}
+            onChange={(value) => setGlobalFilter(String(value))}
+          />
           <Box sx={{ flexGrow: 1 }}>{children}</Box>
           <ColumnSelectRT instance={table} />
         </Box>

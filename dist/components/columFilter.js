@@ -16,7 +16,7 @@ import IconButton from "@mui/material/IconButton";
 import React from "react";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
-export function Filter({ column, table }) {
+export function ColumnFilter({ column, table }) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
     const firstValue = (_a = table
         .getPreFilteredRowModel()
