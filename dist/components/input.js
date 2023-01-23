@@ -24,5 +24,5 @@ export function DebouncedInput(_a) {
         }, debounce);
         return () => clearTimeout(timeout);
     }, [value]);
-    return (React.createElement(TextField, { variant: "outlined", id: props.name, label: label, name: props.name, value: value, onChange: (e) => setValue(e.target.value) }));
+    return (React.createElement(TextField, { variant: "outlined", id: props.name, label: label, name: props.name, value: value, onChange: (e) => setValue(e.target.value), size: "small" }));
 }
