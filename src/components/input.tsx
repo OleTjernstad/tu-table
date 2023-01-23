@@ -32,7 +32,6 @@ export function DebouncedInput({
   return (
     <TextField
       variant="outlined"
-      fullWidth
       id={props.name}
       label={label}
       name={props.name}
