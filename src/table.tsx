@@ -297,12 +297,14 @@ export function TuTable<T extends Record<string, unknown>>(
     <>
       <TableContainer component={Paper} sx={tableContainerStyle}>
         <Box sx={{ display: "flex", height: "4em" }}>
-          <DebouncedInput
-            label="Søk i alle kolonner"
-            name="search"
-            value={globalFilter ?? ""}
-            onChange={(value) => setGlobalFilter(String(value))}
-          />
+          <Box sx={{ padding: 2 }}>
+            <DebouncedInput
+              label="Søk i alle kolonner"
+              name="search"
+              value={globalFilter ?? ""}
+              onChange={(value) => setGlobalFilter(String(value))}
+            />
+          </Box>
           <Box sx={{ flexGrow: 1 }}>{children}</Box>
           <ColumnSelectRT instance={table} />
         </Box>
